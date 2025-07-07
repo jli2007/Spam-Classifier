@@ -189,16 +189,16 @@ import seaborn as sns
 
 
 plt.figure(figsize=(12,6))
-sns.histplot(df[df['target']==0]['num_characters'])
-sns.histplot(df[df['target']==1]['num_characters'], color='red')
+sns.histplot(df[df['target']==0]['num_characters']) # type: ignore
+sns.histplot(df[df['target']==1]['num_characters'], color='red') # type: ignore
 
 
 # In[30]:
 
 
 plt.figure(figsize=(12,6))
-sns.histplot(df[df['target']==0]['num_words'])
-sns.histplot(df[df['target']==1]['num_words'], color='red')
+sns.histplot(df[df['target']==0]['num_words']) # type: ignore
+sns.histplot(df[df['target']==1]['num_words'], color='red') # type: ignore
 
 
 # In[31]:
@@ -362,7 +362,7 @@ tfidf = TfidfVectorizer(max_features=3000)
 # In[49]:
 
 
-X = tfidf.fit_transform(df['transformed_text']).toarray()
+X = tfidf.fit_transform(df['transformed_text']).toarray() # type: ignore
 
 
 # In[50]:
@@ -515,14 +515,12 @@ for name,clf in clfs.items():
 
 
 performance_df = pd.DataFrame({'Algorithm':clfs.keys(),'Accuracy':accuracy_scores,'Precision':precision_scores}).sort_values('Precision',ascending=False)
-performance_df
 
 
 # In[64]:
 
 
-performance_df1 = pd.melt(performance_df, id_vars = "Algorithm")
-performance_df1
+performance_df1 = pd.melt(performance_df, id_vars = "Algorithm") # type: ignore
 
 
 # In[65]:
