@@ -12,3 +12,6 @@ then evaluates accuracy and precision for each model on the test set & summarize
 7. builds a VotingClassifier combining SVM, MultinomialNB, and Extra Trees (soft voting).
 also builds a StackingClassifier with the same base estimators and a Random Forest as the meta-estimator.
 8. chooses MultinomialNB (mnb) as the production model as its the most accurate + precise.
+
+![don't get scammed](./demo//spam.png)
+![not spam](./demo//ham.png)

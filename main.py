@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[21]:
 
 
 import numpy as np
 import pandas as pd
 
 
-# In[3]:
+# In[22]:
 
 
 df = pd.read_csv('spam.csv', encoding = "ISO-8859-1")
 
 
-# In[4]:
+# In[23]:
 
 
 df.sample(5)
 
 
-# In[5]:
+# In[24]:
 
 
 df.shape
@@ -28,7 +28,7 @@ df.shape
 
 # ## 1. DATA CLEANING
 
-# In[6]:
+# In[25]:
 
 
 df.info()
@@ -36,70 +36,70 @@ df.info()
  
 
 
-# In[7]:
+# In[26]:
 
 
 # drop last 3 cols
 df.drop(columns=['Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4'],inplace=True)
 
 
-# In[8]:
+# In[27]:
 
 
 df.sample(5)
 
 
-# In[9]:
+# In[28]:
 
 
 df.rename(columns={'v1': 'target', 'v2':'text'}, inplace=True)
 df.sample(5)
 
 
-# In[10]:
+# In[29]:
 
 
 from sklearn.preprocessing import LabelEncoder
 encoder = LabelEncoder()
 
 
-# In[11]:
+# In[30]:
 
 
 df['target'] = encoder.fit_transform(df['target'])
 
 
-# In[12]:
+# In[31]:
 
 
 df.head()
 
 
-# In[13]:
+# In[32]:
 
 
 df.isnull().sum()
 
 
-# In[14]:
+# In[33]:
 
 
 df.duplicated().sum()
 
 
-# In[15]:
+# In[34]:
 
 
 df = df.drop_duplicates(keep='first')
 
 
-# In[16]:
+# In[35]:
 
 
 df.duplicated().sum()
 
 
-# In[17]:
+# In[36]:
 
 
 df.shape
@@ -107,7 +107,7 @@ df.shape
 
 # ## 2. EDA
 
-# In[18]:
+# In[37]:
 
 
 import matplotlib.pyplot as plt
@@ -115,99 +115,96 @@ plt.pie(df['target'].value_counts(), labels=['ham', 'spam'], autopct="%0.2f")
 plt.show()
 
 
-# In[19]:
+# In[38]:
 
 
 # Data is imbalanced
 import nltk
+import os
+nltk_data_path = os.path.join(os.getcwd(), 'nltk_data')
+nltk.data.path.append(nltk_data_path)
+nltk.download('stopwords')
 
-# already downloaded:
 
-# nltk.download('punkt', download_dir="nltk_data")
-# nltk.download('stopwords', download_dir="nltk_data")
-
-# tells code to look in nltk_folder directory for nltk data
-nltk.data.path.append('nltk_data')
-
-# In[20]:
+# In[39]:
 
 
 df['num_characters'] = df['text'].apply(len)
 
 
-# In[21]:
+# In[40]:
 
 
 df.head()
 
 
-# In[22]:
+# In[41]:
 
 
 df['num_words'] = df['text'].apply(lambda x:len(nltk.word_tokenize(x)))
 
 
-# In[23]:
+# In[42]:
 
 
 df['num_sentences'] = df['text'].apply(lambda x:len(nltk.sent_tokenize(x)))
 
 
-# In[24]:
+# In[43]:
 
 
 df.head()
 
 
-# In[25]:
+# In[44]:
 
 
 df[['num_characters','num_words', 'num_sentences']].describe()
 
 
-# In[26]:
+# In[45]:
 
 
 # good(ham) msgs
 df[df['target'] == 0][['num_characters','num_words', 'num_sentences']].describe()
 
 
-# In[27]:
+# In[46]:
 
 
 # spam msgs
 df[df['target'] == 1][['num_characters','num_words', 'num_sentences']].describe()
 
 
-# In[28]:
+# In[47]:
 
 
 import seaborn as sns
 
 
-# In[29]:
+# In[48]:
 
 
 plt.figure(figsize=(12,6))
-sns.histplot(df[df['target']==0]['num_characters']) # type: ignore
-sns.histplot(df[df['target']==1]['num_characters'], color='red') # type: ignore
+sns.histplot(df[df['target']==0]['num_characters']) #type: ignore
+sns.histplot(df[df['target']==1]['num_characters'], color='red') #type: ignore
 
 
-# In[30]:
+# In[49]:
 
 
 plt.figure(figsize=(12,6))
-sns.histplot(df[df['target']==0]['num_words']) # type: ignore
-sns.histplot(df[df['target']==1]['num_words'], color='red') # type: ignore
+sns.histplot(df[df['target']==0]['num_words']) #type: ignore
+sns.histplot(df[df['target']==1]['num_words'], color='red') #type: ignore
 
 
-# In[31]:
+# In[50]:
 
 
 sns.pairplot(df, hue='target')
 
 
-# In[32]:
+# In[51]:
 
 
 sns.heatmap(df.corr(numeric_only=True), annot=True)
@@ -215,7 +212,7 @@ sns.heatmap(df.corr(numeric_only=True), annot=True)
 
 # ## 3. Data Preprocessing
 
-# In[33]:
+# In[52]:
 
 
 import string
@@ -247,58 +244,58 @@ def transform_text(text):
     return " ".join(y)
 
 
-# In[34]:
+# In[53]:
 
 
 transform_text("I loved the YT lectures on Machine Learning. How about you?")
 
 
-# In[35]:
+# In[54]:
 
 
 df['transformed_text'] = df['text'].apply(transform_text)
 
 
-# In[36]:
+# In[55]:
 
 
 df.head()
 
 
-# In[37]:
+# In[56]:
 
 
 from wordcloud import WordCloud
 wc = WordCloud(width=500, height=500, min_font_size=10, background_color='white')
 
 
-# In[38]:
+# In[57]:
 
 
 spam_wc = wc.generate(df[df['target'] == 1]['transformed_text'].str.cat(sep=" "))
 
 
-# In[39]:
+# In[58]:
 
 
 plt.figure(figsize=(15,6))
 plt.imshow(spam_wc)
 
 
-# In[40]:
+# In[59]:
 
 
 ham_wc = wc.generate(df[df['target'] == 0]['transformed_text'].str.cat(sep=" "))
 
 
-# In[41]:
+# In[60]:
 
 
 plt.figure(figsize=(15,6))
 plt.imshow(ham_wc)
 
 
-# In[42]:
+# In[61]:
 
 
 spam = []
@@ -308,13 +305,13 @@ for msg in df[df['target'] == 1]['transformed_text'].tolist():
         
 
 
-# In[43]:
+# In[62]:
 
 
 len(spam)
 
 
-# In[44]:
+# In[63]:
 
 
 from collections import Counter
@@ -324,7 +321,7 @@ plt.xticks(rotation='vertical')
 plt.show()
 
 
-# In[45]:
+# In[64]:
 
 
 ham = []
@@ -333,13 +330,13 @@ for msg in df[df['target'] == 0]['transformed_text'].tolist():
         ham.append(words)
 
 
-# In[46]:
+# In[65]:
 
 
 len(ham)
 
 
-# In[47]:
+# In[66]:
 
 
 from collections import Counter
@@ -351,7 +348,7 @@ plt.show()
 
 # ## 4. Model Building
 
-# In[48]:
+# In[67]:
 
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -359,32 +356,32 @@ cv = CountVectorizer()
 tfidf = TfidfVectorizer(max_features=3000)
 
 
-# In[49]:
+# In[68]:
 
 
-X = tfidf.fit_transform(df['transformed_text']).toarray() # type: ignore
+X = tfidf.fit_transform(df['transformed_text']).toarray() #type: ignore
 
 
-# In[50]:
+# In[69]:
 
 
 X.shape
 
 
-# In[51]:
+# In[70]:
 
 
 y= df['target'].values
 
 
-# In[52]:
+# In[71]:
 
 
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y ,test_size=0.2, random_state=2)
 
 
-# In[53]:
+# In[72]:
 
 
 from sklearn.naive_bayes import GaussianNB,MultinomialNB, BernoulliNB
@@ -394,7 +391,7 @@ mnb = MultinomialNB()
 bnb = BernoulliNB()
 
 
-# In[54]:
+# In[73]:
 
 
 gnb.fit(X_train, y_train)
@@ -404,7 +401,7 @@ print(confusion_matrix(y_test, y_pred1))
 print(precision_score(y_test, y_pred1))
 
 
-# In[55]:
+# In[74]:
 
 
 mnb.fit(X_train, y_train)
@@ -414,7 +411,7 @@ print(confusion_matrix(y_test, y_pred2))
 print(precision_score(y_test, y_pred2))
 
 
-# In[56]:
+# In[75]:
 
 
 bnb.fit(X_train, y_train)
@@ -424,7 +421,7 @@ print(confusion_matrix(y_test, y_pred3))
 print(precision_score(y_test, y_pred3))
 
 
-# In[57]:
+# In[76]:
 
 
 # tfidf --> MNB: https://github.com/campusx-official/sms-spam-classifier/blob/main/sms-spam-detection.ipynb
@@ -443,7 +440,7 @@ from sklearn.ensemble import GradientBoostingClassifier
 # from xgboost import XGBClassifier
 
 
-# In[58]:
+# In[77]:
 
 
 svc = SVC(kernel='sigmoid', gamma=1.0)
@@ -458,7 +455,7 @@ etc = ExtraTreesClassifier(n_estimators=50, random_state=2)
 gbdt = GradientBoostingClassifier(n_estimators=50,random_state=2)
 
 
-# In[59]:
+# In[78]:
 
 
 clfs = {
@@ -475,7 +472,7 @@ clfs = {
 }
 
 
-# In[60]:
+# In[79]:
 
 
 def train_classifier(clf,X_train,y_train,X_test,y_test):
@@ -487,13 +484,13 @@ def train_classifier(clf,X_train,y_train,X_test,y_test):
     return accuracy,precision
 
 
-# In[61]:
+# In[80]:
 
 
 train_classifier(svc,X_train,y_train,X_test,y_test)
 
 
-# In[62]:
+# In[81]:
 
 
 accuracy_scores = []
@@ -511,19 +508,19 @@ for name,clf in clfs.items():
     precision_scores.append(current_precision)
 
 
-# In[63]:
+# In[82]:
 
 
 performance_df = pd.DataFrame({'Algorithm':clfs.keys(),'Accuracy':accuracy_scores,'Precision':precision_scores}).sort_values('Precision',ascending=False)
 
 
-# In[64]:
+# In[83]:
 
 
-performance_df1 = pd.melt(performance_df, id_vars = "Algorithm") # type: ignore
+performance_df1 = pd.melt(performance_df, id_vars = "Algorithm") #type: ignore
 
 
-# In[65]:
+# In[84]:
 
 
 sns.catplot(x = 'Algorithm', y='value', 
@@ -533,25 +530,25 @@ plt.xticks(rotation='vertical')
 plt.show()
 
 
-# In[66]:
+# In[85]:
 
 
 # improve the model --> bro also had a scaled data version, did not copy over
 
 
-# In[67]:
+# In[86]:
 
 
 temp_df = pd.DataFrame({'Algorithm':clfs.keys(),'Accuracy_max_ft_3000':accuracy_scores,'Precision_max_ft_3000':precision_scores}).sort_values('Precision_max_ft_3000',ascending=False)
 
 
-# In[68]:
+# In[87]:
 
 
 new_df = performance_df.merge(temp_df, on='Algorithm')
 
 
-# In[69]:
+# In[88]:
 
 
 svc = SVC(kernel='sigmoid', gamma=1.0,probability=True)
@@ -561,20 +558,20 @@ etc = ExtraTreesClassifier(n_estimators=50, random_state=2)
 from sklearn.ensemble import VotingClassifier
 
 
-# In[70]:
+# In[89]:
 
 
 # combines multiple
 voting = VotingClassifier(estimators=[('svm', svc), ('nb', mnb), ('et', etc)],voting='soft')
 
 
-# In[71]:
+# In[90]:
 
 
 voting.fit(X_train,y_train)
 
 
-# In[72]:
+# In[91]:
 
 
 y_pred = voting.predict(X_test)
@@ -582,7 +579,7 @@ print("Accuracy",accuracy_score(y_test,y_pred))
 print("Precision",precision_score(y_test,y_pred))
 
 
-# In[73]:
+# In[92]:
 
 
 # Applying stacking
@@ -590,19 +587,19 @@ estimators=[('svm', svc), ('nb', mnb), ('et', etc)]
 final_estimator=RandomForestClassifier()
 
 
-# In[74]:
+# In[93]:
 
 
 from sklearn.ensemble import StackingClassifier
 
 
-# In[75]:
+# In[94]:
 
 
 clf = StackingClassifier(estimators=estimators, final_estimator=final_estimator)
 
 
-# In[76]:
+# In[95]:
 
 
 clf.fit(X_train,y_train)
@@ -611,14 +608,14 @@ print("Accuracy",accuracy_score(y_test,y_pred))
 print("Precision",precision_score(y_test,y_pred))
 
 
-# In[ ]:
+# In[96]:
 
 
 # all above was was for testing we actually have to use the fitted mnb module:
 mnb.fit(X_train, y_train)
 
 
-# In[79]:
+# In[97]:
 
 
 import pickle
@@ -626,11 +623,10 @@ pickle.dump(tfidf,open('vectorizer.pkl','wb'))
 pickle.dump(mnb,open('model.pkl','wb'))
 
 
-# In[82]:
+# In[98]:
 
 
 # 
 # for msg in df[df['target'] == 1]['transformed_text'].tolist():
 #     print(msg)
 
-print("script finished")
